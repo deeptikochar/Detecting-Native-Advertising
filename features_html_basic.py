@@ -167,7 +167,7 @@ file_list = sc.parallelize(key_list)
 
 p = file_list.flatMap(process_data).collect()
 
-with open('final_html.csv', 'w') as csvfile:
+with open('3-formatted_html.csv', 'w') as csvfile:
     fieldnames = p[1].keys()
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     headers = {}
