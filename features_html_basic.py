@@ -23,14 +23,6 @@ def process_data(s3key):
     k = b.get_key(s3key)
     data = k.get_contents_as_string()
     values = {}
-    values['filename'] = os.path.basename(s3key)
-    values["word_count"] = len(re.split('\s+', data))
-    values['line_count'] = data.count('\n')
-    values['space_count'] = data.count(' ')
-    values['tab_count'] = data.count('\t')
-    values['brace_count'] = data.count('{')
-    values['bracket_count'] = data.count('(')
-    values['length'] = len(data)
 
     # HTML features
     values['div_count'] = data.count('<div')
@@ -126,7 +118,28 @@ def process_data(s3key):
     values['dd_count'] = data.count('<dd')
     values['menu_count'] = data.count('<menu')
     values['menuitem_count'] = data.count('<menuitem')
-
+    
+    # Styles
+    values['style_count'] = data.count('<style')
+    values['span_count'] = data.count('<span')
+    values['header_count'] = data.count('<header')
+    values['footer_count'] = data.count('<footer')
+    values['main_count'] = data.count('<main')
+    values['section_count'] = data.count('<section')
+    values['article_count'] = data.count('<article')
+    values['aside_count'] = data.count('<aside')
+    values['details_count'] = data.count('<details')
+    values['dialog_count'] = data.count('<dialog')
+    values['summary_count'] = data.count('<summary')
+    values['caption_count'] = data.count('<caption')
+    values['th_count'] = data.count('<th>') + data.count('<th ')
+    values['thead_count'] = data.count('<thead')
+    values['tbody_count'] = data.count('<tbody')
+    values['tfoot_count'] = data.count('<tfoot')
+    values['col_count'] = data.count('<col')
+    values['colgroup_count'] = data.count('<colgroup')
+    
+    
     conn.close()
     return os.path.basename(s3key), values
 
@@ -154,8 +167,8 @@ file_list = sc.parallelize(key_list)
 
 p = file_list.flatMap(process_data).collect()
 
-with open('final.csv', 'w') as csvfile:
-    fieldnames = ['filename', 'word_count', 'line_count', 'space_count', 'tab_count', 'brace_count', 'bracket_count', 'length']
+with open('final_html.csv', 'w') as csvfile:
+    fieldnames = p[1].keys()
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     headers = {}
     for field in fieldnames:
