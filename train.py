@@ -59,7 +59,7 @@ file_list = sc.parallelize(key_list)
 p = file_list.flatMap(process_data).collect()
 
 with open('3-formatted.csv', 'w') as csvfile:
-    fieldnames = ['filename', 'word_count', 'line_count', 'space_count', 'tab_count', 'brace_count', 'bracket_count', 'length']
+    fieldnames = p[1].keys()
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     headers = {}
     for field in fieldnames:
