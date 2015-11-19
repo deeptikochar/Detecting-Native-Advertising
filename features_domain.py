@@ -22,7 +22,13 @@ def process_data(s3key):
     b = conn.get_bucket(bucket)
     k = b.get_key(s3key)
     data = k.get_contents_as_string()
+
+    myregex = r'(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}'
+    urls = re.findall(myregex, data)
+    domains = []
+
     domain_counts = {}
+    domain_counts['filename'] = os.path.basename(s3key)
     for url in urls:
         domain = url.replace('www.', '')
         domains.append(domain)
@@ -83,6 +89,5 @@ with open('3-formatted.csv', 'w') as csvfile:
                 if field not in dom:
                     dom[field] = 0
             writer.writerow(dom)
-
 
 
