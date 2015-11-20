@@ -25,6 +25,7 @@ def process_data(s3key):
     values = {}
 
     # HTML features
+    values['filename'] = os.path.basename(s3key)
     values['div_count'] = data.count('<div')
     values['paragraph_count'] = data.count('<p>')
     values['header_count'] = data.count('<h')
