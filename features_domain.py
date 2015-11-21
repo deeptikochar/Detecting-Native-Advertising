@@ -18,7 +18,7 @@ def process_data(s3key):
         gzip package.
     """
     conn = boto.connect_s3()
-    b = conn.get_bucket(bucket, validate=False))
+    b = conn.get_bucket(bucket, validate=False)
     k = b.get_key(s3key)
     data = k.get_contents_as_string()
     myregex = r'(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}'
