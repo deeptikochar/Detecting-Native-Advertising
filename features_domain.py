@@ -22,17 +22,14 @@ def process_data(s3key):
     b = conn.get_bucket(bucket, validate=False))
     k = b.get_key(s3key)
     data = k.get_contents_as_string()
-
     myregex = r'(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}'
     urls = re.findall(myregex, data)
     domains = []
-
     domain_counts = {}
     domain_counts['filename'] = os.path.basename(s3key)
     for url in urls:
         domain = url.replace('www.', '')
         domains.append(domain)
-
     num_distinct_domains = 0
     for domain in domains:
         if domain in domain_counts:
@@ -40,16 +37,10 @@ def process_data(s3key):
         else:
             domain_counts[domain] = 1
             num_distinct_domains +=1
-
     domain_counts['total_urls'] = len(urls)
     domain_counts['distinct_domains'] = num_distinct_domains
-
     conn.close()
     return os.path.basename(s3key), domain_counts
-
-
-
-
 
 conn = boto.connect_s3()
 # bucket is the name of the S3 bucket where your data resides

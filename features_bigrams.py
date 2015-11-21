@@ -25,7 +25,6 @@ def process_data(s3key):
     k = b.get_key(s3key)
     data = k.get_contents_as_string()
     conn.close()
-
     soup = BeautifulSoup(data)
     soup.get_text().replace("\n",'')
     for script in soup(["script", "style"]):
@@ -36,13 +35,10 @@ def process_data(s3key):
     # break multi-headlines into a line each
     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
     text = '\n'.join(chunk for chunk in chunks if chunk)
-
-
     words = re.findall('\w+', text)
     bigram_list = list(nltk.bigrams(words))
     bigram_counts = {}
     bigram_counts['filename'] = os.path.basename(s3key)
-
     num_distinct_bigrams = 0
     for bigram in bigram_list:
         if bigram in bigram_counts:
@@ -50,17 +46,12 @@ def process_data(s3key):
         else:
             bigram_counts[bigram] = 1
             num_distinct_bigrams +=1
-
     bigram_counts['total_bigrams'] = len(bigram_list)
     bigram_counts['distinct_bigrams'] = num_distinct_bigrams   
     return os.path.basename(s3key), bigram_counts
-
-
-
-
-
+    
 conn = boto.connect_s3()
-# bucket is the name of the S3 bucket where your data resides
+    # bucket is the name of the S3 bucket where your data resides
 
 b = conn.get_bucket(bucket, validate=False))  
 # inkey_root is the S3 'directory' in which your files are located

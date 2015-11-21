@@ -25,7 +25,6 @@ def process_data(s3key):
     k = b.get_key(s3key)
     data = k.get_contents_as_string()
     conn.close()
-
     soup = BeautifulSoup(data)
     soup.get_text().replace("\n",'')
     for script in soup(["script", "style"]):
@@ -36,13 +35,10 @@ def process_data(s3key):
     # break multi-headlines into a line each
     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
     text = '\n'.join(chunk for chunk in chunks if chunk)
-
-
     words = re.findall('\w+', text)
     trigram_list = list(nltk.ngrams(words,3))
     trigram_counts = {}
     trigram_counts['filename'] = os.path.basename(s3key)
-
     num_distinct_trigrams = 0
     for trigram in trigram_list:
         if trigram in trigram_counts:
@@ -54,10 +50,6 @@ def process_data(s3key):
     trigram_counts['total_trigrams'] = len(trigram_list)
     trigram_counts['distinct_trigrams'] = num_distinct_trigrams   
     return os.path.basename(s3key), trigram_counts
-
-
-
-
 
 conn = boto.connect_s3()
 # bucket is the name of the S3 bucket where your data resides

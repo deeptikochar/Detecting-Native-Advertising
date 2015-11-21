@@ -23,7 +23,6 @@ def process_data(s3key):
     k = b.get_key(s3key)
     data = k.get_contents_as_string()
     values = {}
-
     # HTML features
     values['filename'] = os.path.basename(s3key)
     values['div_count'] = data.count('<div')
@@ -57,8 +56,7 @@ def process_data(s3key):
     values['noscript_count'] = data.count('<noscript')
     values['embed_count'] = data.count('<embed')
     values['object_count'] = data.count('<object')
-    values['param_count'] = data.count('<param')
-    
+    values['param_count'] = data.count('<param')  
     values['bdi_count'] = data.count('<bdi')
     values['bdo_count'] = data.count('<bdo')
     values['blockquote_count'] = data.count('<blockquote')
@@ -85,7 +83,6 @@ def process_data(s3key):
     values['u_count'] = data.count('<u>') + data.count('<u ')
     values['var_count'] = data.count('<var')
     values['wbr_count'] = data.count('<wbr')
-
     # Forms and input tags
     values['form_count'] = data.count('<form')
     values['input_count'] = data.count('<input')
@@ -100,7 +97,6 @@ def process_data(s3key):
     values['datalist_count'] = data.count('<datalist')
     values['keygen_count'] = data.count('<keygen')
     values['output_count'] = data.count('<output')
-
     # Images
     values['image_count'] = data.count('<img')
     values['map_count'] = data.count('<map')
@@ -108,7 +104,6 @@ def process_data(s3key):
     values['canvas_count'] = data.count('<canvas')
     values['figcaption_count'] = data.count('<figcaption')
     values['figure_count'] = data.count('<figure')
-
     # Lists
     values['ul_count'] = data.count('<ul')
     values['ol_count'] = data.count('<ol')
@@ -118,8 +113,7 @@ def process_data(s3key):
     values['dt_count'] = data.count('<dt')
     values['dd_count'] = data.count('<dd')
     values['menu_count'] = data.count('<menu')
-    values['menuitem_count'] = data.count('<menuitem')
-    
+    values['menuitem_count'] = data.count('<menuitem') 
     # Styles
     values['style_count'] = data.count('<style')
     values['span_count'] = data.count('<span')
@@ -139,14 +133,8 @@ def process_data(s3key):
     values['tfoot_count'] = data.count('<tfoot')
     values['col_count'] = data.count('<col')
     values['colgroup_count'] = data.count('<colgroup')
-    
-    
     conn.close()
     return os.path.basename(s3key), values
-
-
-
-
 
 conn = boto.connect_s3()
 # bucket is the name of the S3 bucket where your data resides

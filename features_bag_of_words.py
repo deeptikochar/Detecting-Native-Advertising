@@ -24,7 +24,6 @@ def process_data(s3key):
     k = b.get_key(s3key)
     data = k.get_contents_as_string()
     conn.close()
-
     soup = BeautifulSoup(data)
     soup.get_text().replace("\n",'')
     for script in soup(["script", "style"]):
@@ -35,12 +34,9 @@ def process_data(s3key):
     # break multi-headlines into a line each
     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
     text = '\n'.join(chunk for chunk in chunks if chunk)
-
-
     words = re.findall('\w+', text)
     bag_of_words = {}
     bag_of_words['filename'] = os.path.basename(s3key)
-
     num_distinct_words = 0
     for word in words:
         if word in bag_of_words:
@@ -48,14 +44,9 @@ def process_data(s3key):
         else:
             bag_of_words[word] = 1
             num_distinct_words +=1
-
     bag_of_words['total_words'] = len(words)
     bag_of_words['distinct_words'] = num_distinct_words    
     return os.path.basename(s3key), bag_of_words
-
-
-
-
 
 conn = boto.connect_s3()
 # bucket is the name of the S3 bucket where your data resides
