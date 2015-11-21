@@ -19,7 +19,7 @@ def process_data(s3key):
     """
     print "FETCH_DATA gets called"
     conn = boto.connect_s3()
-    b = conn.get_bucket(bucket)
+    b = conn.get_bucket(bucket, validate=False))
     k = b.get_key(s3key)
     data = k.get_contents_as_string()
 
@@ -54,7 +54,7 @@ def process_data(s3key):
 conn = boto.connect_s3()
 # bucket is the name of the S3 bucket where your data resides
 
-b = conn.get_bucket(bucket)  
+b = conn.get_bucket(bucket, validate=False))  
 # inkey_root is the S3 'directory' in which your files are located
 inkey_root = '3'
 keys = b.list(prefix=inkey_root)
