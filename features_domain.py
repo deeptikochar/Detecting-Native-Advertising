@@ -17,7 +17,6 @@ def process_data(s3key):
         contain the compressed data which will have to be unzipped using the 
         gzip package.
     """
-    print "FETCH_DATA gets called"
     conn = boto.connect_s3()
     b = conn.get_bucket(bucket, validate=False))
     k = b.get_key(s3key)

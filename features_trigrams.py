@@ -46,7 +46,6 @@ def process_data(s3key):
         else:
             trigram_counts[trigram] = 1
             num_distinct_trigrams +=1
-
     trigram_counts['total_trigrams'] = len(trigram_list)
     trigram_counts['distinct_trigrams'] = num_distinct_trigrams   
     return os.path.basename(s3key), trigram_counts
