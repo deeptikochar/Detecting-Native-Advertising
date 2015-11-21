@@ -44,7 +44,7 @@ def process_data(s3key):
 conn = boto.connect_s3()
 # bucket is the name of the S3 bucket where your data resides
 
-b = conn.get_bucket(bucket, validate=False))  
+b = conn.get_bucket(bucket, validate=False)
 # inkey_root is the S3 'directory' in which your files are located
 inkey_root = '3'
 keys = b.list(prefix=inkey_root)
