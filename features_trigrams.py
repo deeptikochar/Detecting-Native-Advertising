@@ -5,7 +5,6 @@ import re
 import csv
 from csv import DictWriter
 from bs4 import BeautifulSoup
-import nltk
 
 
 bucket = 'bds-new'
@@ -21,18 +20,15 @@ def process_data(s3keyDict):
     """
     print "FETCH_DATA gets called"
     words = re.findall('\w+', s3keyDict["content"])
-    trigram_list = list(nltk.ngrams(words,3))
     trigram_counts = {}
     trigram_counts['filename'] = os.path.basename(s3keyDict["filename"])
-    num_distinct_trigrams = 0
-    for trigram in trigram_list:
+    n = len(words)
+    for i in range(0, n-2):
+        trigram = words[i] + ' ' + words[i+1] + ' ' + words[i+2]
         if trigram in trigram_counts:
             trigram_counts[trigram] += 1
         else:
             trigram_counts[trigram] = 1
-            num_distinct_trigrams +=1
-    trigram_counts['total_trigrams'] = len(trigram_list)
-    trigram_counts['distinct_trigrams'] = num_distinct_trigrams   
     return os.path.basename(s3keyDict["filename"]), trigram_counts
 
 conn = boto.connect_s3()
