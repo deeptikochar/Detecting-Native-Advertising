@@ -22,13 +22,17 @@ def process_data(s3keyDict):
     words = re.findall('\w+', s3keyDict["content"])
     bigram_counts = {}
     bigram_counts['filename'] = os.path.basename(s3keyDict["filename"])
+    bigram_temp = {}
     n = len(words)
     for i in range(0, n-1):
         bigram = words[i] + ' ' + words[i+1]
-        if bigram in bigram_counts:
-            bigram_counts[bigram] += 1
+        if bigram in bigram_temp:
+            bigram_temp[bigram] += 1
         else:
-            bigram_counts[bigram] = 1  
+            bigram_temp[bigram] = 1  
+    for bigram in bigram_temp:
+        if bigram_temp[bigram] > 1:
+            bigram_counts[bigram] = bigram_temp[bigram]
     return os.path.basename(s3keyDict["filename"]), bigram_counts
 
 conn = boto.connect_s3()

@@ -22,13 +22,17 @@ def process_data(s3keyDict):
     words = re.findall('\w+', s3keyDict["content"])
     trigram_counts = {}
     trigram_counts['filename'] = os.path.basename(s3keyDict["filename"])
+    trigram_temp = {}
     n = len(words)
     for i in range(0, n-2):
         trigram = words[i] + ' ' + words[i+1] + ' ' + words[i+2]
-        if trigram in trigram_counts:
-            trigram_counts[trigram] += 1
+        if trigram in trigram_temp:
+            trigram_temp[trigram] += 1
         else:
-            trigram_counts[trigram] = 1
+            trigram_temp[trigram] = 1  
+    for trigram in trigram_temp:
+        if trigram_temp[trigram] > 1:
+            trigram_counts[trigram] = trigram_temp[trigram]
     return os.path.basename(s3keyDict["filename"]), trigram_counts
 
 conn = boto.connect_s3()
