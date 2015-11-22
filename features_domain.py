@@ -21,14 +21,15 @@ def process_data(s3key):
     b = conn.get_bucket(bucket, validate=False)
     k = b.get_key(s3key)
     data = k.get_contents_as_string()
-    myregex = r'(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}'
+    myregex = r'href[\s]?=[\s]?"[\s]?http[s]?://[a-zA-Z0-9\-\.]{,61}'
     urls = re.findall(myregex, data)
     domains = []
     domain_counts = {}
-    domain_counts['filename'] = os.path.basename(s3key)
+    domain_counts['filename'] = os.path.basename(s3key)   
     for url in urls:
-        domain = url.replace('www.', '')
-        domains.append(domain)
+        loc = url.find('://') + 3
+        domain = url[loc:]
+        domain = domain.replace('www.', '')
     num_distinct_domains = 0
     for domain in domains:
         if domain in domain_counts:
