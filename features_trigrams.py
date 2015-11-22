@@ -9,7 +9,7 @@ import nltk
 
 
 bucket = 'bds-new'
-def process_data(s3key):
+def process_data(s3keyDict):
     """
     Fetch data with the given s3 key and pass along the contents as a string.
 
@@ -20,25 +20,10 @@ def process_data(s3key):
         gzip package.
     """
     print "FETCH_DATA gets called"
-    conn = boto.connect_s3()
-    b = conn.get_bucket(bucket, validate=False)
-    k = b.get_key(s3key)
-    data = k.get_contents_as_string()
-    conn.close()
-    soup = BeautifulSoup(data)
-    soup.get_text().replace("\n",'')
-    for script in soup(["script", "style"]):
-        script.extract()    # rip it out
-    text = soup.get_text()
-    # break into lines and remove leading and trailing space on each
-    lines = (line.strip() for line in text.splitlines())
-    # break multi-headlines into a line each
-    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-    text = '\n'.join(chunk for chunk in chunks if chunk)
-    words = re.findall('\w+', text)
+    words = re.findall('\w+', s3keyDict["content"])
     trigram_list = list(nltk.ngrams(words,3))
     trigram_counts = {}
-    trigram_counts['filename'] = os.path.basename(s3key)
+    trigram_counts['filename'] = os.path.basename(s3keyDict["filename"])
     num_distinct_trigrams = 0
     for trigram in trigram_list:
         if trigram in trigram_counts:
@@ -48,7 +33,7 @@ def process_data(s3key):
             num_distinct_trigrams +=1
     trigram_counts['total_trigrams'] = len(trigram_list)
     trigram_counts['distinct_trigrams'] = num_distinct_trigrams   
-    return os.path.basename(s3key), trigram_counts
+    return os.path.basename(s3keyDict["filename"]), trigram_counts
 
 conn = boto.connect_s3()
 # bucket is the name of the S3 bucket where your data resides
@@ -62,11 +47,28 @@ key_list = [key.name for key in keys]
 
 key_list.pop(0)
 
+data = []
+
+for s3key in key_list:
+    k = b.get_key(s3key)
+    dictTemp = {}
+    dictTemp["filename"] = s3key
+    soup = BeautifulSoup(k.get_contents_as_string())
+    soup.get_text().replace("\n",'')
+    for script in soup(["script", "style"]):
+        script.extract()    # rip it out
+    text = soup.get_text()
+    lines = (line.strip() for line in text.splitlines())
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    text = '\n'.join(chunk for chunk in chunks if chunk)
+    dictTemp["content"] = text
+    data.append(dictTemp)
+
 conn.close()
 
 #sc = pyspark.SparkContext('local', 'Whatever')
 # Create an RDD from the list of s3 key names to process stored in key_list
-file_list = sc.parallelize(key_list)
+file_list = sc.parallelize(data)
 
 p = file_list.flatMap(process_data).collect()
 
