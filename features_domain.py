@@ -30,6 +30,7 @@ def process_data(s3key):
         loc = url.find('://') + 3
         domain = url[loc:]
         domain = domain.replace('www.', '')
+        domains.append(domain)
     num_distinct_domains = 0
     for domain in domains:
         if domain in domain_counts:
