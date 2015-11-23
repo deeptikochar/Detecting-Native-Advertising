@@ -77,7 +77,8 @@ for i in range(1, len(p), 2):
     fieldnames = fieldnames.union(set(p[i].keys()))
 
 fieldnames = list(fieldnames)
-with open('3-formatted.csv', 'w') as csvfile:
+file_name = 'trigram_' + inkey_root + '._csv'
+with open(file_name, 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     headers = {}
     for field in fieldnames:
