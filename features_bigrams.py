@@ -75,9 +75,9 @@ p = file_list.flatMap(process_data).collect()
 fieldnames = set([])
 for i in range(1, len(p), 2):
     fieldnames = fieldnames.union(set(p[i].keys()))
-
+file_name = "bigram_" + inkey_root +".csv"
 fieldnames = list(fieldnames)
-with open('3-formatted.csv', 'w') as csvfile:
+with open(file_name, 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     headers = {}
     for field in fieldnames:
