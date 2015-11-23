@@ -13,16 +13,20 @@ def process_data(s3keyDict):
     
     words = re.findall('\w+', s3keyDict["content"])
     bag_of_words = {}
+    bag_temp = {}
     bag_of_words['filename'] = os.path.basename(s3keyDict["filename"])
     num_distinct_words = 0
     for word in words:
-        if word in bag_of_words:
-            bag_of_words[word] += 1
+        if word in bag_temp:
+            bag_temp[word] += 1
         else:
-            bag_of_words[word] = 1
+            bag_temp[word] = 1
             num_distinct_words +=1
     bag_of_words['total_words'] = len(words)
-    bag_of_words['distinct_words'] = num_distinct_words    
+    bag_of_words['distinct_words'] = num_distinct_words   
+    for word in bag_temp:
+        if bag_temp[word] > 1:
+            bag_of_words[word] = bag_temp[word] 
     return os.path.basename(s3keyDict["filename"]), bag_of_words
 
 conn = boto.connect_s3()
